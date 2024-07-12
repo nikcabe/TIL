@@ -1,0 +1,157 @@
+# 2024.07.12
+
+# git revert (commit id)
+
+- 재설정
+- 단일 commit의 실행 취소 하는 것
+- 프로젝트 기록에서 commit을 없었던 일로 처리 후 그 결과를 새로운 commit으로 추가함
+- 기록에서 commit이 사라지는 것은 아니다.
+- 없었던 일로 처리 되었을 때의 결과 commit
+- 변경사항을 안전하게 실행 취소 할 수 있도록 도와주는 순방향 실행 취소 작업
+- commit기록에서 commit을 삭제하거나 분리하는 대신 지정된 변경 사항을 반전시키는 새 commit을 생성
+- git에서 기록이 손실되는 것을 방지하며 기록의 무결성과 협업의 신뢰성을 높임
+
+## revert 추가 명령어
+
+git revert vjhhf93 dnfn3;d dsnlj21(공백을 사용하여 한꺼번에 commit 취소 가능)
+
+git revert 364793e..383925c( ‘..을 사용해 범위를 지정하여 여러 commit 한꺼번에 취소 가능)
+
+git revert —no-edit 8v34njv (commit 메시지 작성을 위한 편집기를 열지 않음)
+
+git revert —no-commit 7c7f8c(자동으로 commit하지 않고, Staing Area에만 올림(이후에 직접 commit해야 함)(이 옵션은 여러 commit을 revert 할 때 하나의 commit으로 묶는 것이 가능))
+
+## Vim오류시
+
+입력모드 전환 key I
+
+이름 입력 후 ‘end’
+
+;wq로 나가기
+
+## git reset
+
+git reset [옵션] <commit id>
+
+되돌리기
+
+시계를 마치 과거로 되돌리는 행위
+
+특정 commit으로 되돌아 갔을 때, 되돌아간 commit이후의 commit을 삭제
+
+### reset의 옵션
+
+—soft —mixed —hard
+
+reset은 과거 commit으로 되돌아간 후 되돌아간 commit 이후 commit들이 삭제됨
+
+그런데 삭제되는 commit들의 기록을 어떤 영역에 남겨둘 것인지
+
+옵션을 활용해 조정할 수 있음
+
+- —soft
+    
+    삭제된 commit의 기록을 staging area에 남김
+    
+- —mixed
+    
+    삭제된 commit의 기록을 working directory에 남김(기본옵션값)
+    
+- —hard
+    
+    삭제된 commit의 기록을 남기지 않음
+    
+
+# 이미 삭제된 commit을 살리고 싶다면?
+
+### git reflog
+
+- HEAD가 이전에 가리켰던 모든 commit을 보여줌
+- reset 의 —hard 옵션을 통해 지워진 commit도 reflog로 조회하여 복구가능
+
+## 부록
+
+- 파일 내용을 수정 전으로 되돌리기
+    
+    git restore
+    
+    원래 파일로 덮어 쓰는 원리이기 떄문에 수정한 내용은 전부 사라짐
+    
+    git restore을 통해 수정 취소 후 해당 내용을 복원할 수 없음
+    
+- Staging area에 올라간 파일을 Unstage하기
+    - git rm —cached
+        
+        git저장소에 commit이 없는 경우
+        
+    - git restore —staged
+        
+        git저장소에 commit이 존재하는 경우
+        
+
+## commit 수정하기
+
+git commit —amend
+
+- 1. commit메세지 수정
+    
+    바로직전에 생성한 commit만 수정
+    
+    I 누르고 작성후 ESC 다음 shift+;로 나간뒤 w+q
+    
+- 2. commit전체수정
+    
+    shift
+    
+    ;+w+q
+    
+    ```jsx
+    SSAFY@2□□PC108 MINGW64 ~/Desktop/ss (master)
+    $ git add [READ.me](http://read.me/)
+    fatal: pathspec '[READ.me](http://read.me/)' did not match any files
+    
+    SSAFY@2□□PC108 MINGW64 ~/Desktop/ss (master)
+    $ git add [README.md](http://readme.md/)
+    
+    SSAFY@2□□PC108 MINGW64 ~/Desktop/ss (master)
+    $ git status
+    프로젝트완료
+    On branch master
+    
+    No commits yet
+    
+    Changes to be committed:
+    (use "git rm --cached <file>..." to unstage)
+    new file:   [README.md](http://readme.md/)
+    
+    Untracked files:
+    (use "git add <file>..." to include in what will be committed)
+    b-func.txt
+    
+    SSAFY@2□□PC108 MINGW64 ~/Desktop/ss (master)
+    $ git commit -m "프로젝트완료"
+    [master (root-commit) 1f53448] 프로젝트완료
+    1 file changed, 0 insertions(+), 0 deletions(-)
+    create mode 100644 [README.md](http://readme.md/)
+    
+    SSAFY@2□□PC108 MINGW64 ~/Desktop/ss (master)
+    $ git add b-func.txt
+    
+    SSAFY@2□□PC108 MINGW64 ~/Desktop/ss (master)
+    $ git status
+    On branch master
+    Changes to be committed:
+    (use "git restore --staged <file>..." to unstage)
+    new file:   b-func.txt
+    
+    SSAFY@2□□PC108 MINGW64 ~/Desktop/ss (master)
+    $ git commit --amend
+    [master 093f18d] 프로젝트완료
+    Date: Fri Jul 12 13:42:45 2024 +0900
+    2 files changed, 0 insertions(+), 0 deletions(-)
+    create mode 100644 [README.md](http://readme.md/)
+    create mode 100644 b-func.txt
+    ```
+    
+
+불필요한 commit을 생성하지 않고 직전 commit을 수정할 수있기 때문에 git에서 꼭 필요한 기능 중에 하나라고 볼 수 있다.
