@@ -1,19 +1,38 @@
-'''
-값을 3개를 받는다.
-K,N,M
-k는 한번 충전에 움직일 수 있는 정류장 수
-N은 종점의 번호
-M은 충전기가 설치된 정류장
-'''
-K, N, M = map(int, input().split())
-bus_stop = []
-bus_charge = []
-test = []
-for stop in ran
-ge(N+1):
-    bus_stop.append(stop)
-bus_charge = list(map(int,input().split()))
-for i in bus_charge:
-    bus_stop[i]="o"
+	
+T = int(input())
+for test_case in range(1, T + 1):
+    k, n, m = map(int, input().split())
+    arr = list(map(int, input().split()))
+    bus_stops = [0] * (n+1)
+    for i in arr:
+        bus_stops[i] += 1
 
-print(bus_stop)
+    bus, cnt =0
+    while bus+k < n:
+        charge  = 0
+        for i in range(bus+1,bus+k+1):
+            if i <= n and charge[i] == 1:
+                charge = i
+            if charge == 0:
+                count = 0
+                break
+        bus = charge
+        cnt += 1
+    print(f'#{test_case} {cnt}')
+
+
+# now = 0
+# i = 1
+# charge = 0
+
+# while now < i <= m+1:
+#     if arr[i] - arr[now] > k:
+#         if i - now == 1:
+#             charge = 0
+#             break
+#         now = (i - 1)
+#         charge += 1
+#     else:
+#         i += 1
+
+# print(f'#{test_case} {charge}')
