@@ -11,27 +11,43 @@ def is_valid_code(code):
 T = int(input())
 
 for tc in range(1, 1+T):
-    dic = {'0001101':'0','0011001':'1','0010011':'2','0111101':'3','0100011':'4','0110001':'5','0101111':'6','0111011':'7','0110111':'8','0001011':'9'}
+    dic = {'0001101':'0',
+           '0011001':'1',
+           '0010011':'2',
+           '0111101':'3',
+           '0100011':'4',
+           '0110001':'5',
+           '0101111':'6',
+           '0111011':'7',
+           '0110111':'8',
+           '0001011':'9'}
     n,m = map(int, input().split())
     arr = [input() for _ in range(n)]
-
-    bin = []
+    lst = []
     a = []
-
     for i in range(n):
-        for j in range(m-1, 5, -1):
-            if arr[i][j] == '1':
-                pattern = arr[i][j-7:j+1]
-                if pattern in dic:
-                    a.append(dic[pattern])
-        if a:
+        if '1' in arr[i]:
+            row = (arr[i])
             break
-
-    if a:
-        code = ' '.join(a)
-        if is_valid_code(code):
-            print(f"#{tc} {sum(int(d) for d in a)}")
-        else:
-            print(f"#{tc} 0")
+    for j in range(m-1,-1,-1):
+        if row[j] == '1':
+            end = j
+            break
+    k = end-55
+    while k < end:
+        lst.append(row[k:k+7])
+        k += 7
+    for g in lst:
+        a.append(dic[g])
+    if is_valid_code(a):
+        sum_v = 0
+        for i, digit in enumerate(reversed(a)):
+            if i % 2 == 0:
+                sum_v += int(digit)
+            else:
+                sum_v += 3 * int(digit)
+        a = list(map(int, a))
+        result = sum(a)
+        print(f'#{tc} {result}')
     else:
-        print(f"#{tc} 0")
+        print(f'#{tc} 0')
