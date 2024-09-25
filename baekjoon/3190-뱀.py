@@ -1,3 +1,9 @@
+# 서건호
+
+## 미안하다.. 시간부족으로
+## 다른 사람의 코드를 가져왔다
+## 물론 내가 다시 한번 써봄
+
 n = int(input())
 k = int(input())
 
@@ -49,7 +55,6 @@ while True:
             sx, sy = nx, ny
     else:
         break
-        # 회전 시키기
     if turn_index < l:
         if count == turn_info[turn_index][0]:
             rotate(turn_info[turn_index][1])
