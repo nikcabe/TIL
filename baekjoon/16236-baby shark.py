@@ -1,68 +1,71 @@
 from collections import deque
+
 N = int(input())
 space = [list(map(int, input().split())) for _ in range(N)]
 
-dx, dy = [-1, 0, 1, 0], [0, 1, 0, -1]
+di, dj = [-1, 0, 1, 0], [0, 1, 0, -1]
 
-pos = []
-for i in range(N):
-    for j in range(N):
-        if space[i][j] == 9:
-            pos.append(i)
-            pos.append(j)
+# 시작 위치 찾기
+def find_shark_position():
+    for i in range(N):
+        for j in range(N):
+            if space[i][j] == 9:
+                return i, j
 
-cnt = 0
+# 먹을 수 있는 물고기의 리스트 정렬 기준 함수
+def sort_key(fish):
+    return (fish[0], fish[1], fish[2])
 
-def bfs(x, y):
+# BFS
+def bfs(x, y, size):
     visited = [[0] * N for _ in range(N)]
     queue = deque([[x, y]])
+    # 먹을 수 있는 물고기들의 리스트
     cand = []
     visited[x][y] = 1
 
     while queue:
         i, j = queue.popleft()
-        for idx in range(4):
-            ii, jj = i + dx[idx], j + dy[idx]
-            if 0 <= ii < N and 0 <= jj < N and visited[ii][jj] == 0:
-                if space[x][y] > space[ii][jj] and space[ii][jj] != 0:
-                    visited[ii][jj] = visited[i][j] + 1
-                    cand.append((visited[ii][jj] - 1, ii, jj))
-                elif space[x][y] == space[ii][jj]:
-                    visited[ii][jj] = visited[i][j] + 1
-                    queue.append([ii, jj])
+        for k in range(4):
+            dx, dy = i + di[k], j + dj[k]
+            if 0 <= dx < N and 0 <= dy < N and visited[dx][dy] == 0:
+                if space[dx][dy] == 0 or space[dx][dy] == size:  # 빈칸이거나 상어와 같은 크기의 물고기
+                    visited[dx][dy] = visited[i][j] + 1
+                    queue.append([dx, dy])
+                elif 0 < space[dx][dy] < size:  # 상어보다 작은 물고기
+                    visited[dx][dy] = visited[i][j] + 1
+                    cand.append((visited[dx][dy] - 1, dx, dy))
+                    queue.append([dx, dy])
 
-                elif space[ii][jj] == 0:
-                    visited[ii][jj] = visited[i][j] + 1
-                    queue.append([ii, jj])
+    return sorted(cand, key=sort_key)
 
-    return sorted(cand, key=lambda x: (x[0], x[1], x[2]))
+# 상어의 위치를 찾는다
+i, j = find_shark_position()
 
+# 상어의 크기와 먹은 물고기 수
+size = [2, 0]
+cnt = 0
 
-i, j = pos
-
-# 아기 상어의 크기와 먹은 물고기 수
-size = [2, 0]  # 초기 크기는 2, 먹은 물고기 수는 0
-
-# 계속해서 물고기를 먹을 수 있을 때까지 반복
+# 상어가 더 이상 먹을 물고기가 없을 때까지 반복
 while True:
-    space[i][j] = size[0]  # 현재 위치를 상어의 크기로 설정 (9 -> 상어 크기)
-    cand = deque(bfs(i, j))  # 먹을 수 있는 물고기 후보를 BFS로 찾음
+    space[i][j] = 0  # 상어가 있던 자리는 빈칸으로 만듦
+    cand = deque(bfs(i, j, size[0]))  # 먹을 물고기 찾기
 
-    if not cand:  # 후보가 없으면 종료 (먹을 물고기가 없을 때)
+    if not cand:
         break
 
-    # 가장 가까운 물고기를 선택
+    # 가장 가까운 물고기로 이동
     step, xx, yy = cand.popleft()
-    cnt += step  # 이동한 거리를 더함
-    size[1] += 1  # 먹은 물고기 수를 1 증가
+    cnt += step
+    size[1] += 1  # 물고기 먹음
 
-    # 먹은 물고기 수가 상어의 크기와 같아지면 상어 크기 증가
+    # 상어의 크기만큼 물고기를 먹으면 크기 증가
     if size[0] == size[1]:
-        size[0] += 1  # 상어 크기 증가
-        size[1] = 0  # 먹은 물고기 수 초기화
+        size[0] += 1
+        size[1] = 0
 
-    space[i][j] = 0  # 원래 상어가 있던 자리는 빈칸으로 만듦
-    i, j = xx, yy  # 상어의 위치를 물고기 먹은 위치로 이동
+    # 상어를 새로운 위치로 이동
+    i, j = xx, yy
 
-# 총 이동한 거리를 출력
+# 총 이동한 거리 출력
 print(cnt)
